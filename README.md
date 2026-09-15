@@ -30,6 +30,6 @@ FunFo is a SaaS product web based. FunFo have a segments like an investor with f
 ## Team Member
 
 - **[Hilal Muzaki](https://hilalmuzaki.my.id/)**
-- **[Khalid](https://github.co)**
+- **[Khalid](https://github.com)**
 - **[Dani](https://github.com/)**
 - **[Unknown](https://github.com)**
