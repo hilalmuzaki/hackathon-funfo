@@ -9,7 +9,7 @@ FunFo is a SaaS product web based. FunFo have a segments like an investor with f
 1. Select the work folder, then open terminal/powershell
 2. Get the project via terminal/powershell
 
-    git clone https://github.com/hilalmuzaki/funfo
+    git clone https://github.com/hilalmuzaki/hackathon-funfo.git
 
 3. Install any parts via terminal/powershell
 
