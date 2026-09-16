@@ -1,3 +1,85 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* about text - start */
+.platform-name-size-1 {
+    @apply text-[20px] sm:text-[22px] lg:text-[24px];
+}
+
+.title-size-1 {
+    @apply text-[24px] leading-[32px] sm:text-[30px] sm:leading-[36px] lg:text-[36px] lg:leading-[40px];
+}
+
+.body-size-1 {
+    @apply text-[14px] leading-[20px] sm:text-[16px] sm:leading-[24px] lg:text-[18px];
+}
+
+.notes-size-1 {
+    @apply text-[12px] leading-[16px];
+}
+
+.info-1 {
+    @apply text-[10px] sm:text-[11px] lg:text-[12px] opacity-70;
+}
+
+/* about text - end */
+
+
+/* top nav - start */
+.top-nav-parent-1 {
+    @apply flex items-center justify-between w-full h-[60px] sm:h-[80px] px-4 sm:px-8;
+}
+/* top nav - end */
+
+
+/* body - start */
+.top-section-parent-1 {
+    @apply flex flex-col w-full h-fit py-20 sm:pt-8 sm:pb-20 px-4 sm:px-8 gap-[48px] sm:gap-[64px] lg:gap-[80px];
+}
+
+.section-child-1 {
+    @apply flex flex-col w-full h-fit gap-[24px];
+}
+
+.div-context-parent-1 {
+    @apply flex flex-col w-full h-fit gap-[16px];
+}
+
+.div-context-child-1 {
+    @apply flex flex-col w-full h-fit gap-[8px];
+}
+/* body - end */
+
+
+/* bottom nav - start */
+.bottom-nav-parent-1 {
+    @apply flex items-center justify-between w-full h-[60px] sm:h-[80px] px-4 sm:px-8;
+}
+
+.bottom-nav-child-1 {
+    @apply flex items-center justify-between w-full h-[60px] sm:h-[80px] px-4 sm:px-8;
+}
+/* bottom nav - end */
+
+
+/* card - start */
+.card-parent-1 {
+    @apply flex flex-col w-full h-fit gap-[24px];
+}
+/* card - end */
+
+
+/* other - start */
+.div-col-1 {
+    @apply flex flex-col w-full h-fit gap-[24px];
+}
+
+.div-row-1 {
+    @apply flex flex-row w-full h-fit gap-[24px];
+}
+
+.div-grid-cols-2-1 {
+    @apply grid grid-cols-2 w-full h-fit gap-[24px];
+}
+/* other - end */
