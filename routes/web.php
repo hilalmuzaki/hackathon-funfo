@@ -12,6 +12,10 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/test', function () {
+    return Inertia::render('Test');
+})->name('test');
+
 Route::middleware('auth')->group(function () {
     Route::get('/', [HomeController::class, 'homePage'])->name('home');
     Route::get('/news', [NewsController::class, 'newsPage'])->name('news');

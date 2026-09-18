@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.primary-interface {
+    @apply grid grid-cols-1 lg:grid-cols-5 bg-white1 text-black1 dark:bg-black1 dark:text-white1;
+}
+
 /* about text - start */
 .platform-name-size-1 {
     @apply text-[20px] sm:text-[22px] lg:text-[24px];
@@ -27,13 +31,23 @@
 
 /* top nav - start */
 .top-nav-parent-1 {
-    @apply flex items-center justify-between w-full h-[60px] sm:h-[80px] px-4 sm:px-8 bg-primary text-white1;
+    position: fixed;
+    z-index: 99999;
+    @apply flex lg:hidden items-center justify-between w-full px-4 sm:px-36 py-2 sm:py-3 bg-primary text-white1;
 }
 /* top nav - end */
 
-/* body - start */
+/* side nav - start */
+.side-nav-parent-1 {
+    position: fixed;
+    z-index: 99999;
+    @apply hidden lg:flex flex-col min-h-screen w-[20%] px-8 pt-8 pb-20 gap-[24px] bg-primary text-white1 overflow-hidden;
+}
+/* side nav - end */
+
+/* body standard - start */
 .top-section-parent-1 {
-    @apply flex flex-col w-full h-fit py-20 sm:pt-8 sm:pb-20 px-4 sm:px-8 gap-[48px] sm:gap-[64px] lg:gap-[80px];
+    @apply flex flex-col w-full min-h-screen pt-6 sm:pt-8 pb-20 px-4 sm:px-36 lg:px-8 gap-[48px] sm:gap-[64px] lg:gap-[80px] overflow-auto;
 }
 
 .section-child-1 {
@@ -47,13 +61,13 @@
 .div-context-child-1 {
     @apply flex flex-col w-full h-fit gap-[8px];
 }
-/* body - end */
+/* body standard - end */
 
 /* bottom nav - start */
 .bottom-nav-parent-1 {
     position: fixed;
-    bottom: 1.5vh;
-    @apply sm:hidden flex place-self-center w-fit px-4 py-1.5 bg-primary/10 text-white1 rounded-2xl;
+    z-index: 99999;
+    @apply flex lg:hidden bottom-[2vh] sm:bottom-[3vh] place-self-center w-fit px-4 py-1.5 bg-primary/10 dark:bg-primary/60 rounded-2xl;
 }
 
 .bottom-nav-child-1 {
@@ -63,20 +77,26 @@
 
 /* card - start */
 .card-parent-1 {
-    @apply flex flex-col w-full h-fit gap-[24px];
+    @apply flex flex-col w-full h-fit p-[24px] gap-[24px] border-primary/20 dark:border-coPrimary/40 border-[1px] rounded-2xl lg:rounded-3xl;
 }
 /* card - end */
 
+/* button - start */
+.button-icon-nav {
+    @apply size-6;
+}
+/* button - end */
+
 /* other - start */
-.div-col-1 {
-    @apply flex flex-col w-full h-fit gap-[24px];
+.div-row-context-child-1 {
+    @apply flex flex-row w-full h-fit gap-[8px];
 }
 
-.div-row-1 {
-    @apply flex flex-row w-full h-fit gap-[24px];
+.div-grid-cols-112-1 {
+    @apply grid grid-cols-1 lg:grid-cols-2 w-full h-fit gap-[24px];
 }
 
-.div-grid-cols-2-1 {
-    @apply grid grid-cols-2 w-full h-fit gap-[24px];
+.div-grid-cols-122-1 {
+    @apply grid grid-cols-1 sm:grid-cols-2 w-full h-fit gap-[24px];
 }
 /* other - end */
