@@ -47,7 +47,7 @@
 
 /* body standard - start */
 .top-section-parent-1 {
-    @apply flex flex-col w-full min-h-screen pt-6 sm:pt-8 pb-20 px-4 sm:px-36 lg:px-8 gap-[48px] sm:gap-[64px] lg:gap-[80px] overflow-auto;
+    @apply flex flex-col w-full min-h-screen pt-20 sm:pt-24 lg:p-8 pb-20 px-4 sm:px-36 gap-[48px] sm:gap-[64px] lg:gap-[80px] overflow-auto;
 }
 
 .section-child-1 {
