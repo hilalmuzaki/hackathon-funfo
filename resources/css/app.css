@@ -25,13 +25,11 @@
 
 /* about text - end */
 
-
 /* top nav - start */
 .top-nav-parent-1 {
-    @apply flex items-center justify-between w-full h-[60px] sm:h-[80px] px-4 sm:px-8;
+    @apply flex items-center justify-between w-full h-[60px] sm:h-[80px] px-4 sm:px-8 bg-primary text-white1;
 }
 /* top nav - end */
-
 
 /* body - start */
 .top-section-parent-1 {
@@ -51,24 +49,23 @@
 }
 /* body - end */
 
-
 /* bottom nav - start */
 .bottom-nav-parent-1 {
-    @apply flex items-center justify-between w-full h-[60px] sm:h-[80px] px-4 sm:px-8;
+    position: fixed;
+    bottom: 1.5vh;
+    @apply sm:hidden flex place-self-center w-fit px-4 py-1.5 bg-primary/10 text-white1 rounded-2xl;
 }
 
 .bottom-nav-child-1 {
-    @apply flex items-center justify-between w-full h-[60px] sm:h-[80px] px-4 sm:px-8;
+    @apply flex items-center justify-between gap-[16px];
 }
 /* bottom nav - end */
-
 
 /* card - start */
 .card-parent-1 {
     @apply flex flex-col w-full h-fit gap-[24px];
 }
 /* card - end */
-
 
 /* other - start */
 .div-col-1 {
