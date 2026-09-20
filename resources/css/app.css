@@ -67,7 +67,7 @@
 .bottom-nav-parent-1 {
     position: fixed;
     z-index: 99999;
-    @apply flex lg:hidden bottom-[2vh] sm:bottom-[3vh] place-self-center w-fit px-4 py-1.5 bg-primary/10 dark:bg-primary/60 rounded-2xl;
+    @apply flex lg:hidden bottom-[2vh] sm:bottom-[3vh] place-self-center w-fit px-4 py-1.5 bg-primary rounded-2xl;
 }
 
 .bottom-nav-child-1 {
