@@ -5,6 +5,9 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import PrimaryLine from "@/Components/PrimaryLine";
+import { HomeIcon } from "@heroicons/react/24/outline";
+import { NewspaperIcon } from "@heroicons/react/24/outline";
+import { UserIcon } from "@heroicons/react/24/outline";
 
 export default function TopNav() {
     const user = usePage().props.auth.user;
@@ -13,26 +16,41 @@ export default function TopNav() {
 
     return (
         <nav className="side-nav-parent-1">
-            <Link href={route("home")} className="platform-name-size-1 font-black">
-                FunFo
+            <Link
+                href={route("home")}
+                className="platform-name-size-1 font-black"
+            >
+                <img
+                    src="/images/funfo-logo-primary.png"
+                    alt=""
+                    className="dark:hidden block w-36"
+                />
+                <img
+                    src="/images/funfo-logo-second.png"
+                    alt=""
+                    className="hidden dark:block w-36"
+                />
             </Link>
 
             <PrimaryLine />
 
             <div className="div-context-child-1">
                 <NavLink href={route("home")} active={route().current("home")}>
-                    Home
+                    <HomeIcon className="button-icon-nav" />
+                    <p>Home</p>
                 </NavLink>
 
                 <NavLink href={route("news")} active={route().current("news")}>
-                    News
+                    <NewspaperIcon className="button-icon-nav" />
+                    <p>News</p>
                 </NavLink>
 
                 <NavLink
                     href={route("account")}
                     active={route().current("account")}
                 >
-                    Account
+                    <UserIcon className="button-icon-nav" />
+                    <p>Account</p>
                 </NavLink>
             </div>
         </nav>
