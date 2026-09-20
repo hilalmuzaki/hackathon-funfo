@@ -4,7 +4,7 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
-import PrimaryLine from "@/Components/PrimaryLine";
+import JustCoPrimaryLine from "@/Components/JustCoPrimaryLine";
 import { HomeIcon } from "@heroicons/react/24/outline";
 import { NewspaperIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/outline";
@@ -21,18 +21,13 @@ export default function TopNav() {
                 className="platform-name-size-1 font-black"
             >
                 <img
-                    src="/images/funfo-logo-primary.png"
-                    alt=""
-                    className="dark:hidden block w-36"
-                />
-                <img
                     src="/images/funfo-logo-second.png"
                     alt=""
-                    className="hidden dark:block w-36"
+                    className="w-36"
                 />
             </Link>
 
-            <PrimaryLine />
+            <JustCoPrimaryLine />
 
             <div className="div-context-child-1">
                 <NavLink href={route("home")} active={route().current("home")}>
