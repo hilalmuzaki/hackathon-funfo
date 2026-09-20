@@ -14,14 +14,9 @@ export default function TopNav() {
         <nav className="top-nav-parent-1">
             <Link href={route("home")} className="platform-name-size-1">
                 <img
-                    src="/images/funfo-logo-primary.png"
-                    alt=""
-                    className="dark:hidden block h-7"
-                />
-                <img
                     src="/images/funfo-logo-second.png"
                     alt=""
-                    className="hidden dark:block h-7"
+                    className="h-7"
                 />
             </Link>
         </nav>
