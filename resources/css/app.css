@@ -100,3 +100,17 @@
     @apply grid grid-cols-1 sm:grid-cols-2 w-full h-fit gap-[24px];
 }
 /* other - end */
+
+/* table - start */
+.table-parent-1 {
+    @apply divide-y-[1px] divide-coPrimary/20;
+}
+
+.table-thead-tr-th-1 {
+    @apply p-3;
+}
+
+.table-tbody-tr-td-1 {
+    @apply text-center px-3 py-2;
+}
+/* table - end */
