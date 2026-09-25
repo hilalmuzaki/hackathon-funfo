@@ -53,9 +53,8 @@ export default function DeleteUserForm({ className = "" }) {
 
                     <p className="mt-1 text-sm">
                         Setelah akun ini dihapus, semua data akan dihapus secara
-                        permanen. Harap masukkan kata sandi kamu untuk
-                        mengonfirmasi bahwa kamu ingin menghapus akun ini secara
-                        permanen.
+                        permanen. Harap masukkan kata sandi untuk mengonfirmasi
+                        bahwa kamu ingin menghapus akun ini secara permanen.
                     </p>
                 </header>
 
@@ -71,9 +70,9 @@ export default function DeleteUserForm({ className = "" }) {
 
                         <p className="mt-1 text-sm">
                             Setelah akun ini dihapus, semua data akan dihapus
-                            secara permanen. Harap masukkan kata sandi kamu
-                            untuk mengonfirmasi bahwa kamu ingin menghapus akun
-                            ini secara permanen.
+                            secara permanen. Harap masukkan kata sandi untuk
+                            mengonfirmasi bahwa kamu ingin menghapus akun ini
+                            secara permanen.
                         </p>
 
                         <div className="mt-6">
