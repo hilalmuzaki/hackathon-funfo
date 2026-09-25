@@ -20,14 +20,14 @@ export default function BottomNav() {
                     href={route("login")}
                     active={route().current("login")}
                 >
-                    Login
+                    Masuk
                 </NavLink>
 
                 <NavLink
                     href={route("register")}
                     active={route().current("register")}
                 >
-                    Register
+                    Daftar
                 </NavLink>
             </div>
         </nav>

@@ -15,7 +15,8 @@ export default function TopNav() {
             <Link href={route("home")} className="platform-name-size-1">
                 <img
                     src="/images/funfo-logo-second.png"
-                    alt=""
+                    alt="funfo-logo"
+                    title="funfo-logo"
                     className="h-7"
                 />
             </Link>
