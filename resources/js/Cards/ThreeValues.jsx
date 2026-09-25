@@ -1,5 +1,3 @@
-import JustCoPrimaryLine from "@/Components/JustCoPrimaryLine";
-
 export default function ThreeValues() {
     return (
         <div className="card-parent-1">
@@ -17,9 +15,15 @@ export default function ThreeValues() {
                             <tr>
                                 <th className="table-thead-tr-th-1"></th>
                                 <th className="table-thead-tr-th-1">Emiten</th>
-                                <th className="table-thead-tr-th-1">ValueName1</th>
-                                <th className="table-thead-tr-th-1">ValueName2</th>
-                                <th className="table-thead-tr-th-1">ValueName3</th>
+                                <th className="table-thead-tr-th-1">
+                                    ValueName1
+                                </th>
+                                <th className="table-thead-tr-th-1">
+                                    ValueName2
+                                </th>
+                                <th className="table-thead-tr-th-1">
+                                    ValueName3
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="">

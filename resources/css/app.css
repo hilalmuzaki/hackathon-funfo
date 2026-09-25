@@ -89,7 +89,7 @@
 
 /* card - start */
 .card-parent-1 {
-    @apply flex flex-col w-full h-fit p-[24px] gap-[24px] border-primary/20 dark:border-coPrimary/40 border-[1px] rounded-2xl lg:rounded-3xl;
+    @apply flex flex-col w-full h-fit p-[24px] gap-[24px] self-start border-primary/20 dark:border-coPrimary/40 border-[1px] rounded-2xl lg:rounded-3xl;
 }
 /* card - end */
 
@@ -113,11 +113,11 @@
 }
 
 .div-grid-cols-112-1 {
-    @apply grid grid-cols-1 lg:grid-cols-2 w-full h-fit gap-[24px];
+    @apply grid grid-cols-1 lg:grid-cols-2 w-full h-fit items-start gap-[24px];
 }
 
 .div-grid-cols-122-1 {
-    @apply grid grid-cols-1 sm:grid-cols-2 w-full h-fit gap-[24px];
+    @apply grid grid-cols-1 sm:grid-cols-2 w-full h-fit items-start gap-[24px];
 }
 /* other - end */
 

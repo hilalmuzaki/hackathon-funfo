@@ -1,5 +1,3 @@
-import JustCoPrimaryLine from "@/Components/JustCoPrimaryLine";
-
 export default function TwoPlusOneValues() {
     return (
         <div className="card-parent-1">
@@ -17,7 +15,9 @@ export default function TwoPlusOneValues() {
                             <tr>
                                 <th className="table-thead-tr-th-1"></th>
                                 <th className="table-thead-tr-th-1">Emiten</th>
-                                <th className="table-thead-tr-th-1">Selling(Customer)</th>
+                                <th className="table-thead-tr-th-1">
+                                    Selling(Customer)
+                                </th>
                                 <th className="table-thead-tr-th-1">Price</th>
                             </tr>
                         </thead>
@@ -25,7 +25,9 @@ export default function TwoPlusOneValues() {
                             <tr className="">
                                 <td className="table-tbody-tr-td-1">1.</td>
                                 <td className="table-tbody-tr-td-1">BBCA</td>
-                                <td className="table-tbody-tr-td-1">2k units(999 customers)</td>
+                                <td className="table-tbody-tr-td-1">
+                                    2k units(999 customers)
+                                </td>
                                 <td className="table-tbody-tr-td-1">RP5.000</td>
                             </tr>
                         </tbody>

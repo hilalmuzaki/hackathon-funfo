@@ -1,5 +1,3 @@
-import JustCoPrimaryLine from "@/Components/JustCoPrimaryLine";
-
 export default function OneValues() {
     return (
         <div className="card-parent-1">
