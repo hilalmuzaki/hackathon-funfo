@@ -33,7 +33,7 @@ export default function Login({ status, canResetPassword }) {
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="user_id" value="Username atau email" />
+                    <InputLabel htmlFor="user_id" value="Nama pengguna atau email" />
 
                     <TextInput
                         id="user_id"
@@ -50,7 +50,7 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                    <InputLabel htmlFor="password" value="Kata sandi" />
 
                     <TextInput
                         id="password"
@@ -75,12 +75,12 @@ export default function Login({ status, canResetPassword }) {
                             }
                         />
                         <span className="ms-2 text-sm">
-                            Remember me
+                            Ingatlah saya
                         </span>
                     </label>
                 </div>
 
-                <div className="mt-4 flex items-center justify-end text-sm gap-1">Lupa password?
+                <div className="mt-4 flex items-center justify-end text-sm gap-1">Lupa kata sandi?
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
