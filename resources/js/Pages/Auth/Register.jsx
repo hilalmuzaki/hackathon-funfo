@@ -32,6 +32,7 @@ export default function Register() {
                     <TextInput
                         id="name"
                         name="name"
+                        type="text"
                         value={data.name}
                         className="mt-1 block w-full"
                         autoComplete="name"
@@ -49,6 +50,7 @@ export default function Register() {
                     <TextInput
                         id="username"
                         name="username"
+                        type="text"
                         value={data.username}
                         className="mt-1 block w-full"
                         autoComplete="username"
