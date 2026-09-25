@@ -2,7 +2,7 @@ import AuthTopNav from "@/Navigations/AuthTopNav";
 
 export default function AuthLayout({ header, children }) {
     return (
-        <div className="w-full min-h-screen pt-20 sm:pt-36 lg:pt-20 pb-20 px-4 sm:px-48 lg:px-[420px] space-y-[24px] bg-white1 dark:bg-black1 text-black1 dark:text-white1">
+        <div className="w-full min-h-screen pt-14 sm:pt-20 pb-20 px-4 sm:px-48 lg:px-[420px] space-y-[24px] bg-white1 dark:bg-black1 text-black1 dark:text-white1">
             <div className="">
                 <AuthTopNav />
             </div>
