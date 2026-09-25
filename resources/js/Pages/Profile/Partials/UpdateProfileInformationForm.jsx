@@ -15,6 +15,7 @@ export default function UpdateProfileInformation({
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
             name: user.name,
+            username: user.username,
             email: user.email,
         });
 
@@ -28,19 +29,16 @@ export default function UpdateProfileInformation({
         <section className="card-parent-1">
             <div className="section-child-1">
                 <header>
-                    <h2 className="text-lg font-bold">
-                        Profile Information
-                    </h2>
+                    <h2 className="text-lg font-bold">Informasi Pribadi</h2>
 
-                    <p className="mt-1 text-sm">
-                        Update your account's profile information and email
-                        address.
+                    <p className="mt-1 info-1">
+                        Kamu bisa ubah informasi pribadi di sini.
                     </p>
                 </header>
 
                 <form onSubmit={submit} className="div-context-parent-1">
                     <div>
-                        <InputLabel htmlFor="name" value="Name" />
+                        <InputLabel htmlFor="name" value="Nama" />
 
                         <TextInput
                             id="name"
@@ -53,6 +51,27 @@ export default function UpdateProfileInformation({
                         />
 
                         <InputError className="mt-2" message={errors.name} />
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="username" value="Nama pengguna" />
+
+                        <TextInput
+                            id="username"
+                            type="text"
+                            className="mt-1 block w-full"
+                            value={data.username}
+                            onChange={(e) =>
+                                setData("username", e.target.value)
+                            }
+                            required
+                            autoComplete="username"
+                        />
+
+                        <InputError
+                            className="mt-2"
+                            message={errors.username}
+                        />
                     </div>
 
                     <div>
@@ -73,23 +92,22 @@ export default function UpdateProfileInformation({
 
                     {mustVerifyEmail && user.email_verified_at === null && (
                         <div>
-                            <p className="mt-2 text-sm text-gray-800">
-                                Your email address is unverified.
+                            <p className="mt-2 text-sm">
+                                Email kamu tidak terverifikasi.
                                 <Link
                                     href={route("verification.send")}
                                     method="post"
                                     as="button"
-                                    className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    className="rounded-md text-sm underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
-                                    Click here to re-send the verification
-                                    email.
+                                    Klik ini untuk mengirim ulang link verifikasi.
                                 </Link>
                             </p>
 
                             {status === "verification-link-sent" && (
                                 <div className="mt-2 text-sm font-medium text-green-600">
-                                    A new verification link has been sent to
-                                    your email address.
+                                    Link verifikasi terbaru telah dikirim ke
+                                    email kamu.
                                 </div>
                             )}
                         </div>
@@ -97,7 +115,7 @@ export default function UpdateProfileInformation({
 
                     <div className="flex items-center gap-4">
                         <PrimaryButton disabled={processing}>
-                            Save
+                            Simpan
                         </PrimaryButton>
 
                         <Transition
@@ -107,7 +125,7 @@ export default function UpdateProfileInformation({
                             leave="transition ease-in-out"
                             leaveTo="opacity-0"
                         >
-                            <p className="text-sm">Saved.</p>
+                            <p className="text-sm">Perubah telah disimpan</p>
                         </Transition>
                     </div>
                 </form>
