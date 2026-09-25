@@ -31,21 +31,21 @@ export default function Logout() {
 
     return (
         <section className="">
-            <Button onClick={confirmLogout} className="card-parent-1 hover:opacity-80">Logout</Button>
+            <Button onClick={confirmLogout} className="card-parent-1 hover:opacity-80">Keluar</Button>
 
             <Modal show={confirmingLogout} onClose={closeModal} focusable>
                 <form onSubmit={logout} className="p-6">
                     <h2 className="text-lg font-medium text-third">
-                        Are you sure you want to logout?
+                        Kamu yakin ingin keluar?
                     </h2>
 
                     <div className="mt-10 flex justify-end">
                         <SecondaryButton onClick={closeModal}>
-                            Cancel
+                            Batal
                         </SecondaryButton>
 
                         <DangerButton className="ms-3" disabled={processing}>
-                            Logout
+                            Keluar
                         </DangerButton>
                     </div>
                 </form>
