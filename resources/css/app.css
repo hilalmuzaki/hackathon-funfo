@@ -8,7 +8,7 @@
 
 /* about text - start */
 .platform-name-size-1 {
-    @apply text-[20px] sm:text-[22px] lg:text-[24px];
+    @apply text-[20px] sm:text-[22px] lg:text-[24px] leading-[0px];
 }
 
 .title-size-1 {
