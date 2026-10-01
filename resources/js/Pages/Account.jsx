@@ -5,7 +5,7 @@ import UserPreference from "@/Cards/UserPreference";
 import AppTheme from "@/Cards/AppTheme";
 import Logout from "@/Cards/Logout";
 
-export default function Account() {
+export default function Account({ subscription }) {
     return (
         <WebLayout>
             <Head title="Account" />
@@ -13,7 +13,7 @@ export default function Account() {
             <section className="top-section-parent-1">
                 <section className="section-child-1 lg:px-48">
                     <ProfileData />
-                    <UserPreference />
+                    <UserPreference subscription={subscription} />
                     <AppTheme />
                     <Logout />
                 </section>
