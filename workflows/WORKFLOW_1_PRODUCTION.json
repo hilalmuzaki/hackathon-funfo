@@ -181,7 +181,20 @@
     },
     {
       "parameters": {
-        "url": "http://<IP_VPS>:8000/api/alert-subscribers",
+        "url": "https://kddpfltcczgwptkrovav.supabase.co/rest/v1/alert_subscriptions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <SUPABASE_ANON_KEY>"
+            },
+            {
+              "name": "apikey",
+              "value": "<SUPABASE_ANON_KEY>"
+            }
+          ]
+        },
         "options": {}
       },
       "id": "73ec3dc8-f769-402d-8263-ef9ec91fd92f",
@@ -196,7 +209,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const telegramMessage = $('A4 Format Telegram').first().json.telegram_message;\nconst apiResponse = $input.first().json;\nconst subscribers = apiResponse.subscribers || [];\n\nif (subscribers.length === 0) {\n  throw new Error('No active subscribers found');\n}\n\nreturn subscribers.map(sub => ({\n  json: {\n    telegram_chat_id: sub.telegram_chat_id,\n    telegram_message: telegramMessage,\n    user_id: sub.user_id,\n    name: sub.name\n  }\n}));"
+        "jsCode": "const telegramMessage = $('A4 Format Telegram').first().json.telegram_message;\nconst apiResponse = $input.first().json;\nconst subscribers = Array.isArray(apiResponse) ? apiResponse : [];\n\nif (subscribers.length === 0) {\n  throw new Error('No active subscribers found');\n}\n\nreturn subscribers.map(sub => ({\n  json: {\n    telegram_chat_id: sub.telegram_chat_id,\n    telegram_message: telegramMessage,\n    user_id: sub.user_id\n  }\n}));"
       },
       "id": "90bc9401-c321-4439-b84f-e5c014a8e6a8",
       "name": "Prepare Send Data",
@@ -302,7 +315,7 @@
       "main": [
         [
           {
-            "node": "MCP Fetch Value Stock",
+            "node": "A4 Format Telegram",
             "type": "main",
             "index": 0
           }
@@ -313,7 +326,7 @@
       "main": [
         [
           {
-            "node": "MCP Fetch Fundamentals",
+            "node": "A4 Format Telegram",
             "type": "main",
             "index": 0
           }

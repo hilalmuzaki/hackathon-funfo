@@ -168,7 +168,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const telegramMessage = $('B3 Format Telegram FOMO').first().json.telegram_message;\nconst apiResponse = $input.first().json;\nconst subscribers = apiResponse.subscribers || [];\n\nif (subscribers.length === 0) {\n  throw new Error('No active subscribers found');\n}\n\nreturn subscribers.map(sub => ({\n  json: {\n    telegram_chat_id: sub.telegram_chat_id,\n    telegram_message: telegramMessage,\n    user_id: sub.user_id,\n    name: sub.name\n  }\n}));"
+        "jsCode": "const telegramMessage = $('B3 Format Telegram FOMO').first().json.telegram_message;\nconst apiResponse = $input.first().json;\nconst subscribers = Array.isArray(apiResponse) ? apiResponse : (Array.isArray($input.all().map(i=>i.json).flat()) ? $input.all().map(i=>i.json).flat() : []);\n\nif (subscribers.length === 0) {\n  throw new Error('No active subscribers found');\n}\n\nreturn subscribers.map(sub => ({\n  json: {\n    telegram_chat_id: sub.telegram_chat_id,\n    telegram_message: telegramMessage,\n    user_id: sub.user_id\n  }\n}));"
       },
       "id": "b1350761-6657-46c9-92c2-15c3020dbf7a",
       "name": "Prepare Send FOMO",
@@ -287,7 +287,20 @@
     },
     {
       "parameters": {
-        "url": "http://<IP_VPS>:8000/api/alert-subscribers",
+        "url": "https://kddpfltcczgwptkrovav.supabase.co/rest/v1/alert_subscriptions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <SUPABASE_ANON_KEY>"
+            },
+            {
+              "name": "apikey",
+              "value": "<SUPABASE_ANON_KEY>"
+            }
+          ]
+        },
         "options": {}
       },
       "id": "e56a2133-3b66-4c8d-b614-50ca72665f0b",
