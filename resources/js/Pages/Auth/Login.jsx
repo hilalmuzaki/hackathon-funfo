@@ -101,10 +101,10 @@ export default function Login({ status, canResetPassword }) {
             {/* Divider Pemisah - Menggunakan background transparan/cocok dengan card */}
             <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-300/70" />
+                    <div className="w-full border-t border-black1 dark:border-white1" />
                 </div>
                 <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
-                    <span className="bg-white1 px-3 text-black1 font-semibold rounded-full">
+                    <span className="bg-black1 dark:bg-white1 px-3 text-white1 dark:text-black1 font-semibold rounded-full">
                         Atau lanjutkan dengan
                     </span>
                 </div>
