@@ -31,10 +31,11 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+      $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:'.User::class,
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            // Cek format email dan keberadaan MX Record DNS domain
+            'email' => 'required|string|lowercase|email:rfc,dns|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -45,10 +46,10 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Memicu pengiriman email verifikasi ke user
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('home', absolute: false));
-    }
+        return redirect()->route('verification.notice');    }
 }

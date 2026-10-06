@@ -1,0 +1,383 @@
+{
+  "name": "WORKFLOW 1 — Pre-Market Daily Pipeline (Multi-User)",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "custom",
+              "cronExpression": "0 8 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "b27a6cad-8410-49ee-8a69-637a9362b9fb",
+      "name": "Cron Trigger 08:00 WIB",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        640,
+        112
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.sectors.app/v2/subsectors/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "pagination": {}
+        }
+      },
+      "id": "fe558caf-ee2e-42e3-bea4-22a1374071f3",
+      "name": "MCP Fetch Undervalued",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1008,
+        112
+      ],
+      "active": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YMUN9NfLYMVE12bG",
+          "name": "sectors_api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.sectors.app/v2/subsectors/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "50"
+            },
+            {
+              "name": "total_assets_mrq",
+              "value": ">0"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {}
+        }
+      },
+      "id": "603e2087-5206-4e28-82e8-9867c358a684",
+      "name": "MCP Fetch Fundamentals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1008,
+        336
+      ],
+      "active": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YMUN9NfLYMVE12bG",
+          "name": "sectors_api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.sectors.app/v2/subsectors/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "50"
+            },
+            {
+              "name": "total_assets_mrq",
+              "value": ">0"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {}
+        }
+      },
+      "id": "163c7fe2-befd-4e0b-8beb-f3b0dcc2f002",
+      "name": "MCP Fetch Value Stock",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1008,
+        -80
+      ],
+      "active": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YMUN9NfLYMVE12bG",
+          "name": "sectors_api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function getRows(items) {\n  if (!items?.length) return [];\n  const raw = items[0].json;\n  if (Array.isArray(raw)) return raw;\n  if (raw?.data && Array.isArray(raw.data)) return raw.data;\n  if (raw?.content) {\n    const t = raw.content.find(c => c.type === 'text');\n    if (t?.text) {\n      try {\n        const p = JSON.parse(t.text);\n        return Array.isArray(p) ? p : (p.data || p.rows || []);\n      } catch(e) { return []; }\n    }\n  }\n  return raw?.result || [];\n}\n\nconst rows = getRows($input.all());\n\nconst undervalued = rows\n  .filter(r => r.pb_mrq > 0 && r.daily_close_change < 0)\n  .sort((a, b) => a.pb_mrq - b.pb_mrq)\n  .slice(0, 10)\n  .map((r, i) => ({\n    no: i + 1,\n    emiten: r.symbol,\n    pbv: Number(r.pb_mrq.toFixed(2)),\n    harga: r.last_close_price,\n    perubahan_harga: `${(r.daily_close_change * 100).toFixed(2)}%`\n  }));\n\nreturn [{ json: { category: 'undervalued', data: undervalued } }];"
+      },
+      "id": "ace2ff9d-648e-458c-ba84-a72366946430",
+      "name": "A1 Process Undervalued",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        112
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function getRows(items) {\n  if (!items?.length) return [];\n  const raw = items[0].json;\n  if (Array.isArray(raw)) return raw;\n  if (raw?.data && Array.isArray(raw.data)) return raw.data;\n  if (raw?.content) {\n    const t = raw.content.find(c => c.type === 'text');\n    if (t?.text) {\n      try {\n        const p = JSON.parse(t.text);\n        return Array.isArray(p) ? p : (p.data || p.rows || []);\n      } catch(e) { return []; }\n    }\n  }\n  return raw?.result || [];\n}\n\nconst rows = getRows($input.all());\n\nconst valueStock = rows\n  .filter(r =>\n    r.roe_ttm > 0.10 &&\n    r.forecast_revenue_growth > 0 &&\n    r.daily_close_change < -0.03 &&\n    r.pb_mrq > 0\n  )\n  .sort((a, b) => a.pb_mrq - b.pb_mrq)\n  .slice(0, 10)\n  .map((r, i) => ({\n    no: i + 1,\n    emiten: r.symbol,\n    revenue: r.total_revenue_mrq,\n    harga: r.last_close_price,\n    roe: `${(r.roe_ttm * 100).toFixed(1)}%`\n  }));\n\nreturn [{ json: { category: 'value_stock', data: valueStock } }];"
+      },
+      "id": "020dde42-4fe3-406d-820a-be18478a85a7",
+      "name": "A2 Process Value Stock",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        -80
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function getRows(items) {\n  if (!items?.length) return [];\n  const raw = items[0].json;\n  if (Array.isArray(raw)) return raw;\n  if (raw?.data && Array.isArray(raw.data)) return raw.data;\n  if (raw?.content) {\n    const t = raw.content.find(c => c.type === 'text');\n    if (t?.text) {\n      try {\n        const p = JSON.parse(t.text);\n        return Array.isArray(p) ? p : (p.data || p.rows || []);\n      } catch(e) { return []; }\n    }\n  }\n  return raw?.result || [];\n}\n\nconst rows = getRows($input.all());\n\nconst cashflow = rows\n  .filter(r => r.operating_cash_flow != null)\n  .sort((a, b) => b.operating_cash_flow - a.operating_cash_flow)\n  .slice(0, 10)\n  .map((r, i) => ({\n    no: i + 1,\n    emiten: r.symbol,\n    arus_kas_operasional: r.operating_cash_flow,\n    arus_kas_investasi: r.investing_cash_flow,\n    arus_kas_pendanaan: r.financing_cash_flow\n  }));\n\nconst topRoa = rows\n  .filter(r => r.roa_ttm != null)\n  .sort((a, b) => b.roa_ttm - a.roa_ttm)\n  .slice(0, 10)\n  .map((r, i) => ({ no: i + 1, emiten: r.symbol, roa: `${(r.roa_ttm * 100).toFixed(1)}%` }));\n\nconst topRoe = rows\n  .filter(r => r.roe_ttm != null)\n  .sort((a, b) => b.roe_ttm - a.roe_ttm)\n  .slice(0, 10)\n  .map((r, i) => ({ no: i + 1, emiten: r.symbol, roe: `${(r.roe_ttm * 100).toFixed(1)}%` }));\n\nreturn [{ json: { category: 'fundamentals', cashflow, top_roa: topRoa, top_roe: topRoe } }];"
+      },
+      "id": "5b27caad-c17d-47f4-ab91-7644172a2bf9",
+      "name": "A3 Process Fundamentals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        336
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const undervalued = $('A1 Process Undervalued').first().json.data || [];\nconst valueStock = $('A2 Process Value Stock').first().json.data || [];\nconst fundamentals = $('A3 Process Fundamentals').first().json || {};\n\nconst tanggal = new Date().toLocaleDateString('id-ID', {\n  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'\n});\n\nlet msg = `📊 *PRE-MARKET BRIEFING* — ${tanggal}\\n\\n`;\n\nmsg += `*🔻 Undervalued (PBV Rendah, Harga Turun)*\\n`;\nif (undervalued.length > 0) {\n  undervalued.forEach(r => {\n    msg += `${r.no}. ${r.emiten.replace(/[_*`\\[]/g, '\\\\$&')} — PBV ${r.pbv} | Rp${r.harga.toLocaleString('id-ID')} (${r.perubahan_harga})\\n`;\n  });\n} else {\n  msg += `Tidak ada data\\n`;\n}\n\nmsg += `\\n*💎 Value Stock (Fundamental Bagus, Harga Diskon)*\\n`;\nif (valueStock.length > 0) {\n  valueStock.forEach(r => {\n    msg += `${r.no}. ${r.emiten.replace(/[_*`\\[]/g, '\\\\$&')} — ROE ${r.roe} | Rp${r.harga.toLocaleString('id-ID')}\\n`;\n  });\n} else {\n  msg += `Tidak ada data\\n`;\n}\n\nmsg += `\\n*🏆 Top ROE*\\n`;\nif (fundamentals.top_roe && fundamentals.top_roe.length > 0) {\n  fundamentals.top_roe.forEach(r => { \n    msg += `${r.no}. ${r.emiten} — ${r.roe}\\n`; \n  });\n} else {\n  msg += `Tidak ada data\\n`;\n}\n\nmsg += `\\n_Data: Sectors API • Otomatis via n8n • Bukan rekomendasi beli/jual_`;\n\nreturn [{ json: { telegram_message: msg } }];"
+      },
+      "id": "491e5f2c-3fc1-4a6c-9384-510e81a512b9",
+      "name": "A4 Format Telegram",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        112
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "url": "http://<IP_VPS>:8000/api/alert-subscribers",
+        "options": {}
+      },
+      "id": "73ec3dc8-f769-402d-8263-ef9ec91fd92f",
+      "name": "Fetch Alert Subscribers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2080,
+        112
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const telegramMessage = $('A4 Format Telegram').first().json.telegram_message;\nconst apiResponse = $input.first().json;\nconst subscribers = apiResponse.subscribers || [];\n\nif (subscribers.length === 0) {\n  throw new Error('No active subscribers found');\n}\n\nreturn subscribers.map(sub => ({\n  json: {\n    telegram_chat_id: sub.telegram_chat_id,\n    telegram_message: telegramMessage,\n    user_id: sub.user_id,\n    name: sub.name\n  }\n}));"
+      },
+      "id": "90bc9401-c321-4439-b84f-e5c014a8e6a8",
+      "name": "Prepare Send Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2368,
+        112
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8909642475:AAGOEZ234zCPRae-SJ1u238g25i7pSWENvY/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $json.telegram_chat_id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.telegram_message }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1f8a1ef7-f350-43fa-bbf5-5315020eb254",
+      "name": "Send Telegram Pre-Market",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2656,
+        112
+      ],
+      "active": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Cron Trigger 08:00 WIB": {
+      "main": [
+        [
+          {
+            "node": "MCP Fetch Undervalued",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MCP Fetch Value Stock",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MCP Fetch Fundamentals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Fetch Undervalued": {
+      "main": [
+        [
+          {
+            "node": "A1 Process Undervalued",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Fetch Value Stock": {
+      "main": [
+        [
+          {
+            "node": "A2 Process Value Stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Fetch Fundamentals": {
+      "main": [
+        [
+          {
+            "node": "A3 Process Fundamentals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A1 Process Undervalued": {
+      "main": [
+        [
+          {
+            "node": "A4 Format Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A2 Process Value Stock": {
+      "main": [
+        [
+          {
+            "node": "A4 Format Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A3 Process Fundamentals": {
+      "main": [
+        [
+          {
+            "node": "A4 Format Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A4 Format Telegram": {
+      "main": [
+        [
+          {
+            "node": "Fetch Alert Subscribers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Alert Subscribers": {
+      "main": [
+        [
+          {
+            "node": "Prepare Send Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Send Data": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Pre-Market",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "f25eb6cb-9473-4d28-ac45-7c85476d76f3",
+  "meta": {
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "ZtgvM3nXqkuQZfiB",
+  "tags": []
+}
