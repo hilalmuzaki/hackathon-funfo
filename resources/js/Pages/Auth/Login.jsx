@@ -70,23 +70,23 @@ export default function Login({ status, canResetPassword }) {
                         <Checkbox
                             name="remember"
                             checked={data.remember}
-                            className="rounded-lg border-slate-300 text-slate-900 focus:ring-slate-900"
+                            className="rounded-lg border-black1 dark:border-white1 text-slate-900 focus:ring-slate-900"
                             onChange={(e) =>
                                 setData('remember', e.target.checked)
                             }
                         />
-                        <span className="ms-2 text-sm text-white1/50">
+                        <span className="ms-2 text-sm text-black1/50 dark:text-white1/50">
                             Ingatlah saya
                         </span>
                     </label>
                 </div>
 
                 <div className="mt-4 flex items-center justify-end text-sm gap-1">
-                    <span className="text-white1/60">Lupa kata sandi?</span>
+                    <span className="text-black1/60 dark:text-white1/60">Lupa kata sandi?</span>
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="rounded-md text-sm text-white1 hover:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            className="rounded-md text-sm text-black1 dark:text-white1 hover:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
                             Klik ini
                         </Link>
