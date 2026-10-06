@@ -33,14 +33,14 @@ export default function Login({ status, canResetPassword }) {
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="user_id" value="Nama pengguna atau email" className="text-slate-800 font-medium" />
+                    <InputLabel htmlFor="user_id" value="Nama pengguna atau email" />
 
                     <TextInput
                         id="user_id"
                         type="text"
                         name="user_id"
                         value={data.user_id}
-                        className="mt-1 block w-full rounded-2xl border-slate-300 bg-white/60 focus:bg-white focus:border-slate-800 focus:ring-slate-800 transition"
+                        className="mt-1 block w-full"
                         autoComplete="user_id"
                         isFocused={true}
                         onChange={(e) => setData('user_id', e.target.value)}
@@ -50,14 +50,14 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Kata sandi" className="text-slate-800 font-medium" />
+                    <InputLabel htmlFor="password" value="Kata sandi" />
 
                     <TextInput
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full rounded-2xl border-slate-300 bg-white/60 focus:bg-white focus:border-slate-800 focus:ring-slate-800 transition"
+                        className="mt-1 block w-full"
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
@@ -75,24 +75,24 @@ export default function Login({ status, canResetPassword }) {
                                 setData('remember', e.target.checked)
                             }
                         />
-                        <span className="ms-2 text-sm text-slate-600">
+                        <span className="ms-2 text-sm text-white1/50">
                             Ingatlah saya
                         </span>
                     </label>
                 </div>
 
                 <div className="mt-4 flex items-center justify-end text-sm gap-1">
-                    <span className="text-slate-500">Lupa kata sandi?</span>
+                    <span className="text-white1/60">Lupa kata sandi?</span>
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none transition"
+                            className="rounded-md text-sm text-white1 hover:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
                             Klik ini
                         </Link>
                     )}
 
-                    <PrimaryButton className="ms-4 rounded-xl px-6 py-2.5 bg-[#091E42] hover:bg-[#06152e] active:bg-[#030b1a] text-white shadow-sm transition" disabled={processing}>
+                    <PrimaryButton className="ms-4" disabled={processing}>
                         Login
                     </PrimaryButton>
                 </div>
@@ -104,7 +104,7 @@ export default function Login({ status, canResetPassword }) {
                     <div className="w-full border-t border-slate-300/70" />
                 </div>
                 <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
-                    <span className="bg-[#e4ebf5] px-3 text-slate-400 font-semibold rounded-full">
+                    <span className="bg-white1 px-3 text-black1 font-semibold rounded-full">
                         Atau lanjutkan dengan
                     </span>
                 </div>
