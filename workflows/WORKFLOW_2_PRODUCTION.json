@@ -1,0 +1,447 @@
+{
+  "name": "WORKFLOW 2 — FOMO Breaker Alert (Multi-User)",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "custom",
+              "cronExpression": "*/15 9-15 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "6d19b9bc-c1ad-425b-80c3-2b9668f6e41a",
+      "name": "Cron Trigger 15min",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -1936,
+        960
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.sectors.app/v2/most-traded/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "pagination": {
+            "pagination": {
+              "paginationMode": "off"
+            }
+          }
+        }
+      },
+      "id": "f34722ff-53b3-457b-b578-f47c43035267",
+      "name": "MCP Most Traded",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1744,
+        864
+      ],
+      "active": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YMUN9NfLYMVE12bG",
+          "name": "sectors_api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $('MCP Most Traded').first().json;\nconst dates = Object.keys(raw).sort();\nconst latest = dates[dates.length - 1];\nconst arr = Array.isArray(raw[latest]) ? raw[latest] : [];\n\nconst mostTraded = arr.map(o => ({\n  symbol: String(o.symbol || '').replace('.JK', ''),\n  volume: Number(o.volume) || 0\n})).filter(i => i.symbol);\n\nconst symbols = mostTraded.map(i => i.symbol);\nconst volumeMap = Object.fromEntries(mostTraded.map(i => [i.symbol, i.volume]));\n\nreturn {\n  mostTraded,\n  symbols,\n  volumeMap\n};"
+      },
+      "id": "e11c1d3d-5ba6-4a88-aee9-c0f6d448f006",
+      "name": "B1 Extract Symbols",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1440,
+        864
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "url": "https://kddpfltcczgwptkrovav.supabase.co/rest/v1/market_snapshot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <SUPABASE_ANON_KEY>"
+            },
+            {
+              "name": "apikey",
+              "value": "<SUPABASE_ANON_KEY>"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1b18638-2b27-41e5-971a-5887774a5087",
+      "name": "Get Supabase Snapshot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1264,
+        960
+      ],
+      "active": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.sectors.app/v2/companies/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "cc18e1db-80b0-44b7-8436-17734178fabf",
+      "name": "MCP Fetch PBV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1072,
+        960
+      ],
+      "active": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YMUN9NfLYMVE12bG",
+          "name": "sectors_api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const b1Data = $('B1 Extract Symbols').first().json;\nconst mostTraded = b1Data.mostTraded || [];\nlet snapshot = [];\ntry { snapshot = $('Get Supabase Snapshot').all().map(i => i.json); } catch(e){ snapshot=[]; }\n\nconst pbvRaw = $('MCP Fetch PBV').all().map(i=>i.json);\nlet pbvFlat=[]; pbvRaw.forEach(r=>{ if(Array.isArray(r.results)) pbvFlat.push(...r.results); else if(Array.isArray(r)) pbvFlat.push(...r); else if(r?.symbol) pbvFlat.push(r); });\nconst pbvMap = Object.fromEntries(pbvFlat.map(i=>[String(i.symbol).replace('.JK',''), Number(i.pb_mrq ?? i.pb ?? i.pbv ?? 1) || 1]));\n\nconst VOLUME_SPIKE = 2.0;\nconst PBV_EXPENSIVE = 4.0;\nconst anomalies=[];\nconst snapshot_data=[];\n\nmostTraded.forEach(stock=>{\n  const symbol=String(stock.symbol).replace('.JK','');\n  const currentVol=Number(stock.volume)||0;\n  const pbv=pbvMap[symbol] ?? 1;\n  const prevData=snapshot.find(s=>String(s.symbol).replace('.JK','')===symbol);\n  const prevVol=prevData?Number(prevData.volume):0;\n  \n  snapshot_data.push({\n    symbol,\n    volume: currentVol,\n    checked_at: new Date().toISOString()\n  });\n  \n  if(prevVol>0){\n    const ratio=currentVol/prevVol;\n    if(ratio>=VOLUME_SPIKE && pbv>=PBV_EXPENSIVE) anomalies.push({symbol,currentVol,prevVol,ratio:ratio.toFixed(2),pbv:String(pbv)});\n  }\n});\n\nreturn { \n  has_anomaly: anomalies.length > 0,\n  anomalies, \n  snapshot_data \n};"
+      },
+      "id": "e2c7d2cf-05c1-4fb1-af5e-98ede2015ad0",
+      "name": "B2 Deteksi Anomali",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        960
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.has_anomaly }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "4f9e6092-6193-4372-a437-8418fe3ceef3",
+      "name": "IF Has Anomaly",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        960
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const { anomalies } = $('B2 Deteksi Anomali').first().json;\nconst waktu = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';\n\nlet msg = `🚨 *ANTI-FOMO ALERT* — ${waktu}\\n\\n`;\nmsg += `Terdeteksi lonjakan volume nggak wajar tapi valuasi tergolong mahal:\\n\\n`;\n\nanomalies.forEach(a => {\n  msg += `*${a.symbol}*\\n`;\n  msg += `Volume naik ${a.ratio}x dari checkpoint sebelumnya\\n`;\n  msg += `PBV: ${a.pbv}\\n\\n`;\n});\n\nmsg += `⚠️ *Ini bukan sinyal beli.* Lonjakan volume tanpa dukungan fundamental sering jadi jebakan FOMO. Cek dulu laporan keuangannya sebelum ambil keputusan.`;\n\nreturn [{ json: { telegram_message: msg } }];"
+      },
+      "id": "c07e75cb-fba0-443b-a9c4-4503b354e62e",
+      "name": "B3 Format Telegram FOMO",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        848
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const telegramMessage = $('B3 Format Telegram FOMO').first().json.telegram_message;\nconst apiResponse = $input.first().json;\nconst subscribers = apiResponse.subscribers || [];\n\nif (subscribers.length === 0) {\n  throw new Error('No active subscribers found');\n}\n\nreturn subscribers.map(sub => ({\n  json: {\n    telegram_chat_id: sub.telegram_chat_id,\n    telegram_message: telegramMessage,\n    user_id: sub.user_id,\n    name: sub.name\n  }\n}));"
+      },
+      "id": "b1350761-6657-46c9-92c2-15c3020dbf7a",
+      "name": "Prepare Send FOMO",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        848
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $json.telegram_chat_id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.telegram_message }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "648860cb-446d-4ddb-a5b1-913effa3e9b9",
+      "name": "Send Telegram FOMO",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        432,
+        848
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const b2Data = $('B2 Deteksi Anomali').first().json;\nconst snapshot_data = b2Data?.snapshot_data || [];\n\nconst payload = snapshot_data.map(item => ({\n  json: {\n    symbol: String(item.symbol || ''),\n    volume: Number(item.volume) || 0,\n    checked_at: item.checked_at || new Date().toISOString()\n  }\n}));\n\nreturn payload;"
+      },
+      "id": "50d1490a-7bd9-42bc-86e7-2654ab5df44a",
+      "name": "B4 Payload Upsert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        1072
+      ],
+      "active": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://kddpfltcczgwptkrovav.supabase.co/rest/v1/market_snapshot",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <SUPABASE_ANON_KEY>"
+            },
+            {
+              "name": "apikey",
+              "value": "<SUPABASE_ANON_KEY>"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "volume",
+              "value": "={{ $json.volume }}"
+            },
+            {
+              "name": "checked_at",
+              "value": "={{ $json.checked_at }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "999191fd-a3b7-41fc-a3d3-3e853ae6be3d",
+      "name": "Supabase Upsert Snapshot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -112,
+        1072
+      ],
+      "active": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "c71F8S6lTLbmrdZN",
+          "name": "supabase_auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "http://<IP_VPS>:8000/api/alert-subscribers",
+        "options": {}
+      },
+      "id": "e56a2133-3b66-4c8d-b614-50ca72665f0b",
+      "name": "Fetch Alert Subscribers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -144,
+        848
+      ],
+      "active": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Cron Trigger 15min": {
+      "main": [
+        [
+          {
+            "node": "MCP Most Traded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Most Traded": {
+      "main": [
+        [
+          {
+            "node": "B1 Extract Symbols",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "B1 Extract Symbols": {
+      "main": [
+        [
+          {
+            "node": "Get Supabase Snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Supabase Snapshot": {
+      "main": [
+        [
+          {
+            "node": "MCP Fetch PBV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Fetch PBV": {
+      "main": [
+        [
+          {
+            "node": "B2 Deteksi Anomali",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "B2 Deteksi Anomali": {
+      "main": [
+        [
+          {
+            "node": "IF Has Anomaly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Has Anomaly": {
+      "main": [
+        [
+          {
+            "node": "B3 Format Telegram FOMO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "B4 Payload Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "B3 Format Telegram FOMO": {
+      "main": [
+        [
+          {
+            "node": "Fetch Alert Subscribers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Send FOMO": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram FOMO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "B4 Payload Upsert": {
+      "main": [
+        [
+          {
+            "node": "Supabase Upsert Snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Alert Subscribers": {
+      "main": [
+        [
+          {
+            "node": "Prepare Send FOMO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "84159fca-7143-458e-9441-a1a8e08a8204",
+  "meta": {
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "BQLOQkCTaB12r1hW",
+  "tags": []
+}
