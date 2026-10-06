@@ -35,16 +35,20 @@ class AlertSubscriptionController extends Controller
 
         try {
             if ($isActive && !empty($chatId)) {
-                // Upsert data subscriber aktif ke Supabase
-                Http::withHeaders([
+                // Tambahkan ?on_conflict=user_id agar PostgREST tahu kolom acuan upsert
+                $response = Http::withHeaders([
                     'apikey' => $supabaseKey,
                     'Authorization' => 'Bearer ' . $supabaseKey,
                     'Content-Type' => 'application/json',
                     'Prefer' => 'resolution=merge-duplicates',
-                ])->post($supabaseUrl, [
+                ])->post("{$supabaseUrl}?on_conflict=user_id", [
                     'user_id' => (string) $user->id,
                     'telegram_chat_id' => (string) $chatId,
                 ]);
+
+                if (!$response->successful()) {
+                    \Log::error('Supabase Error: ' . $response->body());
+                }
             } else {
                 // Hapus data jika dinonaktifkan atau chat ID dikosongkan
                 Http::withHeaders([
@@ -53,7 +57,6 @@ class AlertSubscriptionController extends Controller
                 ])->delete("{$supabaseUrl}?user_id=eq.{$user->id}");
             }
         } catch (\Throwable $th) {
-            // Hindari memblokir user jika jaringan Supabase bermasalah
             report($th);
         }
 
