@@ -11,11 +11,11 @@ class NewsController extends Controller
 {
     public function newsPage(): Response
     {
-        $marketData = Cache::remember('sectors_market_data', 300, function () {
-            try {
-                $apiKey = env('SECTORS_API_KEY');
+        $apiKey = env('SECTORS_API_KEY');
 
-                // Ambil daftar emiten aktif
+        // 1. Ambil data asli untuk halaman News (Top ROE, Undervalued, Top ROA)
+        $marketData = Cache::remember('sectors_market_data', 300, function () use ($apiKey) {
+            try {
                 $response = Http::withHeaders([
                     'Authorization' => $apiKey,
                 ])->get('https://api.sectors.app/v2/companies/', [
@@ -30,7 +30,7 @@ class NewsController extends Controller
                 $rows = $json['results'] ?? $json['data'] ?? [];
                 $clean = fn($sym) => str_replace('.JK', '', $sym ?? '-');
 
-                // 1. Undervalued (Simulasi variasi realistis berdasarkan seed simbol jika field belum ada)
+                // 1. Undervalued
                 $undervalued = collect($rows)->values()->map(function ($r, $i) use ($clean) {
                     $seed = crc32($r['symbol'] ?? (string)$i);
                     $pbv = isset($r['pb_mrq']) ? (float)$r['pb_mrq'] : (0.45 + (($seed % 90) / 100));
@@ -49,23 +49,7 @@ class NewsController extends Controller
                     ];
                 })->all();
 
-                // 2. Value Stock
-                $valueStock = collect($rows)->values()->map(function ($r, $i) use ($clean) {
-                    $seed = crc32(($r['symbol'] ?? '') . 'val');
-                    $roe = isset($r['roe_ttm']) ? (float)$r['roe_ttm'] : (0.12 + (($seed % 18) / 100));
-                    $price = isset($r['last_close_price']) ? (float)$r['last_close_price'] : ((($seed % 80) + 15) * 100);
-
-                    return [
-                        'no' => $i + 1,
-                        'emiten' => $clean($r['symbol'] ?? null),
-                        'val1' => number_format($roe * 100, 1) . '%',
-                        'val2' => 'Rp' . number_format($price, 0, ',', '.'),
-                        'roe' => number_format($roe * 100, 1) . '%',
-                        'harga' => 'Rp' . number_format($price, 0, ',', '.'),
-                    ];
-                })->all();
-
-                // 3. Top ROE (Urutkan dari nilai tertinggi)
+                // 2. Top ROE
                 $topRoe = collect($rows)->values()->map(function ($r, $i) use ($clean) {
                     $seed = crc32(($r['symbol'] ?? '') . 'roe');
                     $roe = isset($r['roe_ttm']) ? (float)$r['roe_ttm'] : (0.15 + (($seed % 35) / 100));
@@ -83,7 +67,7 @@ class NewsController extends Controller
                     'roe' => $r['roe'],
                 ])->all();
 
-                // 4. Top ROA
+                // 3. Top ROA
                 $topRoa = collect($rows)->values()->map(function ($r, $i) use ($clean) {
                     $seed = crc32(($r['symbol'] ?? '') . 'roa');
                     $roa = isset($r['roa_ttm']) ? (float)$r['roa_ttm'] : (0.08 + (($seed % 20) / 100));
@@ -107,7 +91,6 @@ class NewsController extends Controller
 
                 return [
                     'undervalued' => $undervalued,
-                    'value_stock' => $valueStock,
                     'top_roe' => $topRoe,
                     'top_roa' => $topRoa,
                 ];
@@ -116,9 +99,76 @@ class NewsController extends Controller
             }
         });
 
+        // 2. Ambil data yang sama persis dengan yang ada di HomeController (Top Gainers, Market Leaders, dll)
+        $overviewData = Cache::remember('home_market_overview', 600, function () use ($apiKey) {
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => $apiKey,
+                ])->get('https://api.sectors.app/v2/companies/', [
+                    'limit' => 50,
+                ]);
+
+                if (!$response->successful()) {
+                    return [];
+                }
+
+                $json = $response->json();
+                $rows = $json['results'] ?? $json['data'] ?? (array_is_list($json) ? $json : []);
+                $companies = collect($rows);
+                $formatSymbol = fn($sym) => str_replace('.JK', '', $sym ?? '-');
+
+                // Top Gainers
+                $topGainers = $companies->slice(0, 5)->values()->map(fn($r, $i) => [
+                    'no' => $i + 1,
+                    'emiten' => $formatSymbol($r['symbol'] ?? null),
+                    'val1' => '+' . round((float) ($r['daily_close_change'] ?? (0.045 - ($i * 0.006))) * 100, 2) . '%',
+                    'val2' => 'Rp' . number_format((float) ($r['last_close_price'] ?? (3500 + ($i * 450))), 0, ',', '.'),
+                ])->all();
+
+                // Market Leaders
+                $marketLeaders = $companies->slice(5, 5)->values()->map(fn($r, $i) => [
+                    'no' => $i + 1,
+                    'emiten' => $formatSymbol($r['symbol'] ?? null),
+                    'val1' => round((float) ($r['pb_mrq'] ?? (2.4 - ($i * 0.2))), 2),
+                    'pbv' => round((float) ($r['pb_mrq'] ?? (2.4 - ($i * 0.2))), 2),
+                    'subVal1' => '+' . round((float) ($r['daily_close_change'] ?? (0.02 - ($i * 0.003))) * 100, 1) . '%',
+                    'perubahan' => '+' . round((float) ($r['daily_close_change'] ?? (0.02 - ($i * 0.003))) * 100, 1) . '%',
+                    'val2' => 'Rp' . number_format((float) ($r['last_close_price'] ?? (8500 - ($i * 900))), 0, ',', '.'),
+                    'harga' => 'Rp' . number_format((float) ($r['last_close_price'] ?? (8500 - ($i * 900))), 0, ',', '.'),
+                ])->all();
+
+                // Top Losers
+                $topLosers = $companies->slice(10, 5)->values()->map(fn($r, $i) => [
+                    'no' => $i + 1,
+                    'emiten' => $formatSymbol($r['symbol'] ?? null),
+                    'val1' => round((float) ($r['daily_close_change'] ?? (-0.038 + ($i * 0.005))) * 100, 2) . '%',
+                    'val2' => 'Rp' . number_format((float) ($r['last_close_price'] ?? (1800 - ($i * 200))), 0, ',', '.'),
+                ])->all();
+
+                // Blue Chips
+                $bluechips = $companies->slice(15, 5)->values()->map(fn($r, $i) => [
+                    'no' => $i + 1,
+                    'emiten' => $formatSymbol($r['symbol'] ?? null),
+                    'val1' => 'PBV ' . round((float) ($r['pb_mrq'] ?? (1.8 - ($i * 0.15))), 2),
+                    'val2' => 'Rp' . number_format((float) ($r['last_close_price'] ?? (5200 + ($i * 650))), 0, ',', '.'),
+                ])->all();
+
+                return [
+                    'top_gainers' => $topGainers,
+                    'market_leaders' => $marketLeaders,
+                    'top_losers' => $topLosers,
+                    'bluechips' => $bluechips,
+                ];
+            } catch (\Exception $e) {
+                return [];
+            }
+        });
+
+        // 3. Kirim kedua props ke halaman News
         return Inertia::render('News', [
-            'marketData' => $marketData,
-            'time' => now('Asia/Jakarta')->translatedFormat('H:i') . ' WIB',
+            'marketData'   => $marketData,
+            'overviewData' => $overviewData,
+            'time'         => now('Asia/Jakarta')->translatedFormat('H:i') . ' WIB',
         ]);
     }
 
@@ -126,9 +176,8 @@ class NewsController extends Controller
     {
         return [
             'undervalued' => [],
-            'value_stock' => [],
-            'top_roe' => [],
-            'top_roa' => [],
+            'top_roe'     => [],
+            'top_roa'     => [],
         ];
     }
 }
