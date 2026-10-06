@@ -121,11 +121,11 @@ export default function Register() {
                     />
                 </div>
 
-                <div className="mt-4 flex items-center justify-end text-sm gap-1 text-white1/60">
+                <div className="mt-4 flex items-center justify-end text-sm gap-1 text-black1/60 dark:text-white1/60">
                     Udah punya akun?
                     <Link
                         href={route("login")}
-                        className="rounded-md text-sm text-white1 hover:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        className="rounded-md text-sm text-black1 dark:text-white1 hover:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
                         Klik ini
                     </Link>
