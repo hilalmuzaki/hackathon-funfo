@@ -25,7 +25,7 @@ export default function OneValues({
                     <table className="table-parent-1">
                         <thead>
                             <tr>
-                                <th className="table-thead-tr-th-1">No</th>
+                                <th className="table-thead-tr-th-1"></th>
                                 <th className="table-thead-tr-th-1">Emiten</th>
                                 <th className="table-thead-tr-th-1">{colName}</th>
                             </tr>

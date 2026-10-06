@@ -1,22 +1,45 @@
-import { Head } from "@inertiajs/react";
+import { useEffect } from "react";
+import { Head, router } from "@inertiajs/react";
 import WebLayout from "@/Layouts/WebLayout";
 import OneValues from "@/Cards/OneValues";
 import TwoValues from "@/Cards/TwoValues";
 import TwoPlusOneValues from "@/Cards/TwoPlusOneValues";
-import ThreeValues from "@/Cards/ThreeValues";
 
-export default function News({ marketData, time }) {
-    const { top_roe = [], undervalued = [], value_stock = [], top_roa = [] } = marketData || {};
+export default function News({ marketData = {}, overviewData = {}, time = "time" }) {
+    const { 
+        top_roe = [], 
+        undervalued = [], 
+        top_roa = [] 
+    } = marketData || {};
+
+    const {
+        top_gainers = [],
+        market_leaders = [],
+        top_losers = [],
+        bluechips = [],
+    } = overviewData || {};
+
+    // Polling background update setiap 30 detik
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.reload({
+                only: ["marketData", "overviewData", "time"],
+                preserveScroll: true,
+            });
+        }, 30000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <WebLayout>
             <Head title="News" />
 
             <section className="top-section-parent-1">
-                {/* Baris Pertama: 4 Kartu Pipeline Pre-Market */}
+                {/* Bagian 1: 2 Kartu di atas, 1 Kartu melebar di bawah */}
                 <section className="section-child-1">
-                    <div className="div-grid-cols-112-1">
-                        {/* Kartu 1: 1 Value (ROE) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Kartu 1: Top ROE (Kiri Atas) */}
                         <OneValues
                             title="Top ROE"
                             time={time}
@@ -24,25 +47,7 @@ export default function News({ marketData, time }) {
                             items={top_roe}
                         />
 
-                        {/* Kartu 2: 2 Values + 1 Value (Undervalued: PBV & % Change + Harga) */}
-                        <TwoPlusOneValues
-                            title="Undervalued Stocks"
-                            time={time}
-                            colVal1="PBV / Perubahan"
-                            colVal2="Harga"
-                            items={undervalued}
-                        />
-
-                        {/* Kartu 3: 2 Values (Value Stock: ROE + Harga) */}
-                        <TwoValues
-                            title="Value Stock (Diskon)"
-                            time={time}
-                            colVal1="ROE"
-                            colVal2="Harga"
-                            items={value_stock}
-                        />
-
-                        {/* Kartu 4: 2 Values (Top ROA) */}
+                        {/* Kartu 2: Top ROA (Kanan Atas) */}
                         <TwoValues
                             title="Top ROA"
                             time={time}
@@ -50,17 +55,54 @@ export default function News({ marketData, time }) {
                             colVal2="Status"
                             items={top_roa}
                         />
+
+                        {/* Kartu 3: Undervalued Stocks (Melebar Penuh 2 Kolom di Bawah) */}
+                        <div className="col-span-1 md:col-span-2">
+                            <TwoPlusOneValues
+                                title="Undervalued Stocks"
+                                time={time}
+                                colVal1="PBV / Perubahan"
+                                colVal2="Harga"
+                                items={undervalued}
+                            />
+                        </div>
+                          <TwoValues
+                            title="Top Gainers"
+                            time={time}
+                            colVal1="Perubahan"
+                            colVal2="Harga"
+                            items={top_gainers}
+                        />
+
+                        {/* Kartu Home 2: Market Leaders */}
+                        <TwoPlusOneValues
+                            title="Market Leaders"
+                            time={time}
+                            colVal1="PBV"
+                            colVal2="Harga"
+                            items={market_leaders}
+                        />
+
+                        {/* Kartu Home 3: Top Losers */}
+                        <TwoValues
+                            title="Top Losers"
+                            time={time}
+                            colVal1="Perubahan"
+                            colVal2="Harga"
+                            items={top_losers}
+                        />
+
+                        {/* Kartu Home 4: Blue Chip Watchlist */}
+                        <TwoValues
+                            title="Blue Chip Watchlist"
+                            time={time}
+                            colVal1="Valuasi"
+                            colVal2="Harga"
+                            items={bluechips}
+                        />
                     </div>
                 </section>
 
-                {/* Baris Kedua: Bisa dipertahankan untuk komponen lain
-                <section className="section-child-1">
-                    <div className="div-grid-cols-112-1">
-                        <ThreeValues />
-                        <OneValues />
-                        <OneValues />
-                    </div>
-                </section> */}
             </section>
         </WebLayout>
     );
