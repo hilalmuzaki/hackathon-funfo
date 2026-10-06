@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
@@ -19,6 +19,14 @@ export default function UserPreference({ subscription = {} }) {
         telegram_chat_id: initialChatId,
         is_active: initialActive,
     });
+
+    // Perbarui data form jika prop subscription berubah setelah simpan
+    useEffect(() => {
+        setData({
+            telegram_chat_id: subscription?.telegram_chat_id ?? "",
+            is_active: Boolean(subscription?.is_active),
+        });
+    }, [subscription]);
 
     const openModal = () => {
         setData({
@@ -49,7 +57,7 @@ export default function UserPreference({ subscription = {} }) {
 
                 <div className="div-context-child-1">
                     <p className="info-1">Status langganan</p>
-                    <p className="body-size-1">
+                    <p className={`body-size-1 font-semibold ${initialActive ? "text-emerald-400" : "text-gray-400"}`}>
                         {initialActive ? "Aktif" : "Tidak aktif"}
                     </p>
                 </div>
@@ -64,7 +72,7 @@ export default function UserPreference({ subscription = {} }) {
 
             <Button
                 onClick={openModal}
-                className="flex flex-row gap-1 items-center text-left w-fit hover:opacity-80"
+                className="flex flex-row gap-1 items-center text-left w-fit hover:opacity-80 text-cyan-400 font-medium"
             >
                 <PencilSquareIcon className="size-5" /> Edit alert
             </Button>
@@ -75,10 +83,10 @@ export default function UserPreference({ subscription = {} }) {
                         Pengaturan Alerts Telegram
                     </h2>
 
-                    <p className="info-1 mt-1">
+                    <p className="info-1 mt-1 text-sm text-gray-400">
                         Dapatkan notifikasi Pre-Market &amp; Anti-FOMO langsung
                         ke Telegram kamu. Kirim pesan ke{" "}
-                        <span className="font-semibold">@userinfobot</span>{" "}
+                        <span className="font-semibold text-cyan-400">@userinfobot</span>{" "}
                         untuk mengetahui Chat ID kamu.
                     </p>
 
@@ -104,17 +112,17 @@ export default function UserPreference({ subscription = {} }) {
                         />
                     </div>
 
-                    <label className="mt-4 flex items-center gap-2">
+                    <label className="mt-4 flex items-center gap-2 cursor-pointer">
                         <input
                             type="checkbox"
                             name="is_active"
                             checked={data.is_active}
-                            className="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                            className="rounded border-gray-600 bg-gray-900 text-cyan-500 shadow-sm focus:ring-cyan-500"
                             onChange={(e) =>
                                 setData("is_active", e.target.checked)
                             }
                         />
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-gray-200">
                             Aktifkan langganan alert
                         </span>
                     </label>
@@ -124,12 +132,12 @@ export default function UserPreference({ subscription = {} }) {
                     />
 
                     <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={closeModal}>
+                        <SecondaryButton onClick={closeModal} type="button">
                             Batal
                         </SecondaryButton>
 
                         <PrimaryButton className="ms-3" disabled={processing}>
-                            Simpan
+                            {processing ? "Menyimpan..." : "Simpan"}
                         </PrimaryButton>
                     </div>
                 </form>

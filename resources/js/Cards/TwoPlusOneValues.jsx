@@ -1,39 +1,104 @@
-export default function TwoPlusOneValues() {
+import { useState } from "react";
+
+export default function TwoPlusOneValues({
+    title = "Title for 2 Values + One Values",
+    time = "time",
+    colVal1 = "Value (SubValue)",
+    colVal2 = "Price",
+    items = [],
+}) {
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+    const totalPages = Math.ceil(items.length / itemsPerPage) || 1;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentItems = items.slice(startIndex, startIndex + itemsPerPage);
+
     return (
-        <div className="card-parent-1">
+        <div className="card-parent-1 flex flex-col justify-between">
             <div className="div-context-parent-1">
                 <div className="div-context-child-1">
-                    <h2 className="title-size-1 font-bold">
-                        Title for 2 Values + One Values
-                    </h2>
-                    <p className="notes-size-1">time</p>
+                    <h2 className="title-size-1 font-bold">{title}</h2>
+                    <p className="notes-size-1">{time}</p>
                 </div>
 
                 <div className="div-context-child-1">
                     <table className="table-parent-1">
-                        <thead className="">
+                        <thead>
                             <tr>
                                 <th className="table-thead-tr-th-1"></th>
                                 <th className="table-thead-tr-th-1">Emiten</th>
-                                <th className="table-thead-tr-th-1">
-                                    Selling(Customer)
-                                </th>
-                                <th className="table-thead-tr-th-1">Price</th>
+                                <th className="table-thead-tr-th-1">{colVal1}</th>
+                                <th className="table-thead-tr-th-1">{colVal2}</th>
                             </tr>
                         </thead>
-                        <tbody className="">
-                            <tr className="">
-                                <td className="table-tbody-tr-td-1">1.</td>
-                                <td className="table-tbody-tr-td-1">BBCA</td>
-                                <td className="table-tbody-tr-td-1">
-                                    2k units(999 customers)
-                                </td>
-                                <td className="table-tbody-tr-td-1">RP5.000</td>
-                            </tr>
+                        <tbody>
+                            {currentItems.length > 0 ? (
+                                currentItems.map((item, index) => (
+                                    <tr key={item.no || startIndex + index}>
+                                        <td className="table-tbody-tr-td-1">
+                                            {startIndex + index + 1}.
+                                        </td>
+                                        <td className="table-tbody-tr-td-1 font-semibold">
+                                            {item.emiten}
+                                        </td>
+                                        <td className="table-tbody-tr-td-1">
+                                            {/* Menampilkan format kombinasi 2 nilai (contoh: PBV 1.25 (-3.4%)) */}
+                                            {item.pbv !== undefined ? (
+                                                <span>
+                                                    {item.pbv}{" "}
+                                                    <span className="text-xs text-rose-400">
+                                                        ({item.perubahan_harga || item.subVal1 || "-"})
+                                                    </span>
+                                                </span>
+                                            ) : (
+                                                item.valCombo || item.selling || item.val1 || "-"
+                                            )}
+                                        </td>
+                                        <td className="table-tbody-tr-td-1">
+                                            {item.harga || item.price || item.val2 || "-"}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td
+                                        colSpan="4"
+                                        className="table-tbody-tr-td-1 text-center text-gray-500 py-3"
+                                    >
+                                        Tidak ada data
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-3 mt-2 border-t border-slate-100 text-xs text-slate-500">
+                    <button
+                        type="button"
+                        onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="px-2.5 py-1 rounded border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition"
+                    >
+                        Prev
+                    </button>
+                    <span>
+                        Hal <strong>{currentPage}</strong> / <strong>{totalPages}</strong>
+                    </span>
+                    <button
+                        type="button"
+                        onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="px-2.5 py-1 rounded border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition"
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

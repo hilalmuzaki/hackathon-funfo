@@ -1,6 +1,9 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
 export default function ProfileData() {
+    const { auth } = usePage().props;
+    const user = auth.user;
+
     return (
         <Link
             href={route("profile.edit")}
@@ -14,17 +17,17 @@ export default function ProfileData() {
 
                     <div className="div-context-child-1">
                         <p className="info-1">Nama</p>
-                        <p className="body-size-1">Toni Kroos</p>
+                        <p className="body-size-1">{user?.name || "-"}</p>
                     </div>
 
                     <div className="div-context-child-1">
                         <p className="info-1">Nama pengguna</p>
-                        <p className="body-size-1">toni.kr8s</p>
+                        <p className="body-size-1">{user?.username || user?.name || "-"}</p>
                     </div>
 
                     <div className="div-context-child-1">
                         <p className="info-1">Email</p>
-                        <p className="body-size-1">toni@kroos.com</p>
+                        <p className="body-size-1">{user?.email || "-"}</p>
                     </div>
                 </div>
             </div>
