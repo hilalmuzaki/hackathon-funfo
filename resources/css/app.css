@@ -24,7 +24,7 @@
 }
 
 .info-1 {
-    @apply text-[10px] sm:text-[11px] lg:text-[12px] opacity-70;
+    @apply text-[10px] sm:text-[11px] lg:text-[12px] opacity-80;
 }
 
 /* about text - end */

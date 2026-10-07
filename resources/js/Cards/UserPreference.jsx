@@ -72,7 +72,7 @@ export default function UserPreference({ subscription = {} }) {
 
             <Button
                 onClick={openModal}
-                className="flex flex-row gap-1 items-center text-left w-fit hover:opacity-80 text-cyan-400 font-medium"
+                className="flex flex-row gap-1 items-center text-left w-fit hover:opacity-100 opacity-70 font-medium"
             >
                 <PencilSquareIcon className="size-5" /> Edit alert
             </Button>
@@ -83,10 +83,10 @@ export default function UserPreference({ subscription = {} }) {
                         Pengaturan Alerts Telegram
                     </h2>
 
-                    <p className="info-1 mt-1 text-sm text-gray-400">
+                    <p className="info-1 mt-1">
                         Dapatkan notifikasi Pre-Market &amp; Anti-FOMO langsung
                         ke Telegram kamu. Kirim pesan ke{" "}
-                        <span className="font-semibold text-cyan-400">@userinfobot</span>{" "}
+                        <span className="font-semibold text-primary dark:text-coPrimary">@userinfobot</span>{" "}
                         untuk mengetahui Chat ID kamu.
                     </p>
 
@@ -117,12 +117,12 @@ export default function UserPreference({ subscription = {} }) {
                             type="checkbox"
                             name="is_active"
                             checked={data.is_active}
-                            className="rounded border-gray-600 bg-gray-900 text-cyan-500 shadow-sm focus:ring-cyan-500"
+                            className="rounded border-gray-600  shadow-sm bg-transparent"
                             onChange={(e) =>
                                 setData("is_active", e.target.checked)
                             }
                         />
-                        <span className="text-sm text-gray-200">
+                        <span className="text-sm">
                             Aktifkan langganan alert
                         </span>
                     </label>
