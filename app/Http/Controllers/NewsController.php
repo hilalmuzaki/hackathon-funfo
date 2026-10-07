@@ -30,24 +30,41 @@ class NewsController extends Controller
                 $rows = $json['results'] ?? $json['data'] ?? [];
                 $clean = fn($sym) => str_replace('.JK', '', $sym ?? '-');
 
-                // 1. Undervalued
+                // 1. Undervalued: PBV tertinggi, kalau sama -> harga terendah
                 $undervalued = collect($rows)->values()->map(function ($r, $i) use ($clean) {
                     $seed = crc32($r['symbol'] ?? (string)$i);
                     $pbv = isset($r['pb_mrq']) ? (float)$r['pb_mrq'] : (0.45 + (($seed % 90) / 100));
-                    $change = isset($r['daily_close_change']) ? (float)$r['daily_close_change'] : -((($seed % 35) + 5) / 1000);
+                    $change = isset($r['daily_close_change']) ? (float)$r['daily_close_change'] : - ((($seed % 35) + 5) / 1000);
                     $price = isset($r['last_close_price']) ? (float)$r['last_close_price'] : ((($seed % 60) + 10) * 100);
 
                     return [
-                        'no' => $i + 1,
-                        'emiten' => $clean($r['symbol'] ?? null),
-                        'val1' => 'PBV ' . number_format($pbv, 2),
-                        'subVal1' => number_format($change * 100, 2) . '%',
-                        'val2' => 'Rp' . number_format($price, 0, ',', '.'),
-                        'pbv' => number_format($pbv, 2),
-                        'perubahan_harga' => number_format($change * 100, 2) . '%',
-                        'harga' => 'Rp' . number_format($price, 0, ',', '.'),
+                        'symbol' => $clean($r['symbol'] ?? null),
+                        'pbv_raw' => round($pbv, 2),
+                        'price_raw' => $price,
+                        'change_raw' => $change,
                     ];
-                })->all();
+                })
+                    ->sort(function ($a, $b) {
+                        if ($a['pbv_raw'] !== $b['pbv_raw']) {
+                            return $a['pbv_raw'] <=> $b['pbv_raw'];
+                        }
+                        return $a['price_raw'] <=> $b['price_raw'];
+                    })
+                    ->values()
+                    ->take(5)
+                    ->map(function ($r, $i) {
+                        return [
+                            'no' => $i + 1,
+                            'emiten' => $r['symbol'],
+                            'val1' => 'PBV ' . number_format($r['pbv_raw'], 2),
+                            'subVal1' => number_format($r['change_raw'] * 100, 2) . '%',
+                            'val2' => 'Rp' . number_format($r['price_raw'], 0, ',', '.'),
+                            'pbv' => number_format($r['pbv_raw'], 2),
+                            'perubahan_harga' => number_format($r['change_raw'] * 100, 2) . '%',
+                            'harga' => 'Rp' . number_format($r['price_raw'], 0, ',', '.'),
+                        ];
+                    })
+                    ->all();
 
                 // 2. Top ROE
                 $topRoe = collect($rows)->values()->map(function ($r, $i) use ($clean) {
@@ -146,11 +163,26 @@ class NewsController extends Controller
                 ])->all();
 
                 // Blue Chips
-                $bluechips = $companies->slice(15, 5)->values()->map(fn($r, $i) => [
+                $bluechips = $companies->values()->map(function ($r, $i) use ($formatSymbol) {
+                    $seed = crc32($r['symbol'] ?? (string) $i);
+                    $pbv = isset($r['pb_mrq']) ? (float) $r['pb_mrq'] : (0.45 + (($seed % 90) / 100));
+                    $price = isset($r['last_close_price']) ? (float) $r['last_close_price'] : ((($seed % 60) + 10) * 100);
+
+                    return [
+                        'symbol' => $formatSymbol($r['symbol'] ?? null),
+                        'pbv_raw' => round($pbv, 2),
+                        'price_raw' => $price,
+                    ];
+                })->sort(function ($a, $b) {
+                    if ($a['pbv_raw'] !== $b['pbv_raw']) {
+                        return $a['pbv_raw'] <=> $b['pbv_raw'];
+                    }
+                    return $a['price_raw'] <=> $b['price_raw'];
+                })->values()->take(5)->map(fn($r, $i) => [
                     'no' => $i + 1,
-                    'emiten' => $formatSymbol($r['symbol'] ?? null),
-                    'val1' => 'PBV ' . round((float) ($r['pb_mrq'] ?? (1.8 - ($i * 0.15))), 2),
-                    'val2' => 'Rp' . number_format((float) ($r['last_close_price'] ?? (5200 + ($i * 650))), 0, ',', '.'),
+                    'emiten' => $r['symbol'],
+                    'val1' => 'PBV ' . number_format($r['pbv_raw'], 2),
+                    'val2' => 'Rp' . number_format($r['price_raw'], 0, ',', '.'),
                 ])->all();
 
                 return [

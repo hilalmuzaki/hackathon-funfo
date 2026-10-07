@@ -77,7 +77,7 @@ export default function ThreeValues({
                         type="button"
                         onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                         disabled={currentPage === 1}
-                        className="px-2.5 py-1 rounded border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition"
+                        className="parent-button-fit-1 disabled:cursor-not-allowed transition"
                     >
                         Prev
                     </button>
@@ -88,7 +88,7 @@ export default function ThreeValues({
                         type="button"
                         onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                         disabled={currentPage === totalPages}
-                        className="px-2.5 py-1 rounded border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition"
+                        className="parent-button-fit-1 disabled:cursor-not-allowed transition"
                     >
                         Next
                     </button>

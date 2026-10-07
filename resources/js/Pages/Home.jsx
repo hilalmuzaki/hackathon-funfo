@@ -40,15 +40,6 @@ export default function Home({ overviewData = {}, time = "time" }) {
                             items={top_gainers}
                         />
 
-                        {/* Kartu 2: Market Leaders */}
-                        <TwoPlusOneValues
-                            title="Market Leaders"
-                            time={time}
-                            colVal1="PBV"
-                            colVal2="Harga"
-                            items={market_leaders}
-                        />
-
                         {/* Kartu 3: Top Losers */}
                         <TwoValues
                             title="Top Losers"
