@@ -5,12 +5,12 @@ import OneValues from "@/Cards/OneValues";
 import TwoValues from "@/Cards/TwoValues";
 import TwoPlusOneValues from "@/Cards/TwoPlusOneValues";
 
-export default function News({ marketData = {}, overviewData = {}, time = "time" }) {
-    const { 
-        top_roe = [], 
-        undervalued = [], 
-        top_roa = [] 
-    } = marketData || {};
+export default function News({
+    marketData = {},
+    overviewData = {},
+    time = "time",
+}) {
+    const { top_roe = [], undervalued = [], top_roa = [] } = marketData || {};
 
     const {
         top_gainers = [],
@@ -57,30 +57,20 @@ export default function News({ marketData = {}, overviewData = {}, time = "time"
                         />
 
                         {/* Kartu 3: Undervalued Stocks (Melebar Penuh 2 Kolom di Bawah) */}
-                        <div className="col-span-1 md:col-span-2">
-                            <TwoPlusOneValues
-                                title="Undervalued Stocks"
-                                time={time}
-                                colVal1="PBV / Perubahan"
-                                colVal2="Harga"
-                                items={undervalued}
-                            />
-                        </div>
-                          <TwoValues
+                        <TwoPlusOneValues
+                            title="Undervalued Stocks"
+                            time={time}
+                            colVal1="PBV / Perubahan"
+                            colVal2="Harga"
+                            items={undervalued}
+                        />
+
+                        <TwoValues
                             title="Top Gainers"
                             time={time}
                             colVal1="Perubahan"
                             colVal2="Harga"
                             items={top_gainers}
-                        />
-
-                        {/* Kartu Home 2: Market Leaders */}
-                        <TwoPlusOneValues
-                            title="Market Leaders"
-                            time={time}
-                            colVal1="PBV"
-                            colVal2="Harga"
-                            items={market_leaders}
                         />
 
                         {/* Kartu Home 3: Top Losers */}
@@ -102,7 +92,6 @@ export default function News({ marketData = {}, overviewData = {}, time = "time"
                         />
                     </div>
                 </section>
-
             </section>
         </WebLayout>
     );

@@ -27,7 +27,9 @@ export default function OneValues({
                             <tr>
                                 <th className="table-thead-tr-th-1"></th>
                                 <th className="table-thead-tr-th-1">Emiten</th>
-                                <th className="table-thead-tr-th-1">{colName}</th>
+                                <th className="table-thead-tr-th-1">
+                                    {colName}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -41,7 +43,10 @@ export default function OneValues({
                                             {item.emiten}
                                         </td>
                                         <td className="table-tbody-tr-td-1">
-                                            {item.roe || item.value || item.val || "-"}
+                                            {item.roe ||
+                                                item.value ||
+                                                item.val ||
+                                                "-"}
                                         </td>
                                     </tr>
                                 ))
@@ -65,20 +70,25 @@ export default function OneValues({
                 <div className="flex items-center justify-between pt-3 mt-2 border-t border-slate-100 text-xs text-slate-500">
                     <button
                         type="button"
-                        onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                        onClick={() =>
+                            setCurrentPage((p) => Math.max(p - 1, 1))
+                        }
                         disabled={currentPage === 1}
-                        className="px-2.5 py-1 rounded border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition"
+                        className="parent-button-fit-1 disabled:cursor-not-allowed transition"
                     >
                         Prev
                     </button>
                     <span>
-                        Hal <strong>{currentPage}</strong> / <strong>{totalPages}</strong>
+                        Hal <strong>{currentPage}</strong> /{" "}
+                        <strong>{totalPages}</strong>
                     </span>
                     <button
                         type="button"
-                        onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                        onClick={() =>
+                            setCurrentPage((p) => Math.min(p + 1, totalPages))
+                        }
                         disabled={currentPage === totalPages}
-                        className="px-2.5 py-1 rounded border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition"
+                        className="parent-button-fit-1 disabled:cursor-not-allowed transition"
                     >
                         Next
                     </button>
