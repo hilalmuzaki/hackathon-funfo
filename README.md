@@ -2,9 +2,9 @@
 
 ## About FunFo
 
-FunFo is a SaaS product web based. FunFo have a segments like an investor with fundamental oriented, which sometimes his impulsive to take a decision because panic that market conditions.
+FunFo memiliki target pasar seperti investor dan trader yang memahami fundamental saham, tetapi sering kali mengambil keputusan bias karena FOMO terhadap pergerakan pasar, sebab tidak ada pengingat rutin yang mengarahkan mereka kembali ke data fundamental sebelum pasar dibuka. Oleh karena itu, FunFo hadir untuk membantu menyelesaikan masalah tersebut lewat fitur automation setiap pagi sebelum market dibuka.
 
-## Installation (Developer)
+## Installation
 
 1. Select the work folder, then open terminal/powershell
 2. Get the project via terminal/powershell
@@ -21,6 +21,8 @@ FunFo is a SaaS product web based. FunFo have a segments like an investor with f
 
     php artisan migrate
 
+    composer require laravel/socialite
+
     npm install
 
 4. Running the npm for support ui via terminal/powershell
@@ -30,6 +32,6 @@ FunFo is a SaaS product web based. FunFo have a segments like an investor with f
 ## Team Member
 
 - **[Hilal Muzaki](https://hilalmuzaki.my.id/)**
-- **[Khalid](https://github.com)**
-- **[Dani](https://github.com/)**
-- **[Unknown](https://github.com)**
+- **[Khalid](https://github.com/Khaleed11-mainacc)**
+- **[Dani](https://github.com/JunianDan)**
+- **[Akmal](https://www.instagram.com/wahykmal_?rpxt=anFyMWVzemFnOXd3)**
