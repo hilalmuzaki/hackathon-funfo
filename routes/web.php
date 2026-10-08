@@ -18,7 +18,7 @@ Route::get('/test', function () {
     return Inertia::render('Test');
 })->name('test');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'homePage'])->name('home');
     Route::get('/news', [NewsController::class, 'newsPage'])->name('news');
     Route::get('/account', [AccountController::class, 'accountPage'])->name('account');
