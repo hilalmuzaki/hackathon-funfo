@@ -29,6 +29,12 @@ FunFo memiliki target pasar seperti investor dan trader yang memahami fundamenta
 
     npm run dev
 
+5. Access FunFo via http://localhost
+
+    Before accessing, ensure the local project points to http://localhost
+
+    Login using Google Account
+
 ## Team Member
 
 - **[Hilal Muzaki](https://hilalmuzaki.my.id/)**
